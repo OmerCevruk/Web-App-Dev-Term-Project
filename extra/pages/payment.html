@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Details</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Payment</h1>
+            <select class="child-selector">
+                <option>Child 1</option>
+            </select>
+        </div>
+
+        <div class="payment-section">
+            <h2>Payment details</h2>
+            <div class="dashboard-card">
+                <div class="payment-details">
+                    <div>
+                        <div class="payment-info">
+                            <span>Total amount</span>
+                            <span>12,000 TL</span>
+                        </div>
+                        <div class="payment-info">
+                            <span>Paid amount</span>
+                            <span>6,000 TL</span>
+                        </div>
+                        <div class="payment-divider"></div>
+                        <div class="payment-info">
+                            <span>Remaining amount</span>
+                            <span>6,000 TL</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Missing payment</h3>
+                        <p>23/9/2002</p>
+                        <p>3,000 TL</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-section">
+            <h2>Payment plan details</h2>
+            <div class="dashboard-card">
+                <div class="payment-details">
+                    <div>
+                        <div class="payment-info">
+                            <span>Number of installments</span>
+                            <span>4</span>
+                        </div>
+                        <div class="payment-info">
+                            <span>Monthly payment amount</span>
+                            <span>3,000 TL</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="payment-info">
+                            <span>Plan beginning</span>
+                            <span>9/12/2002</span>
+                        </div>
+                        <div class="payment-info">
+                            <span>Payment day</span>
+                            <span>23th of each month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-section">
+            <h2>Make payment</h2>
+            <div class="dashboard-card">
+                <form class="payment-form">
+                    <div class="form-group">
+                        <label>Payment amount</label>
+                        <input type="number" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select>
+                            <option value="">Select payment method</option>
+                            <option value="credit">Credit Card</option>
+                            <option value="debit">Debit Card</option>
+                            <option value="transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Due date</label>
+                        <input type="date">
+                    </div>
+                    <button type="submit" class="btn-confirm">Confirm payment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

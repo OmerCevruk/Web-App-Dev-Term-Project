@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student & Sport Registration</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Student Registration</h2>
+        </div>
+        <form>
+            <!-- Student Information Section -->
+            <div class="form-group">
+                <h3>Student Information</h3>
+                <div class="form-row">
+                    <input type="text" placeholder="First Name">
+                    <input type="text" placeholder="Last Name">
+                </div>
+                <div class="form-row">
+                    <input type="text" placeholder="Date of birth dd/mm/yyyy">
+                    <select>
+                        <option value="">Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <input type="password" placeholder="Password">
+                    <input type="password" placeholder="Password repeat">
+                </div>
+            </div>
+            
+            <!-- Parent Information Section -->
+            <div class="form-group">
+                <h3>Parent Information</h3>
+                <div class="form-row">
+                    <input type="text" placeholder="First Name">
+                    <input type="text" placeholder="Last Name">
+                </div>
+                <div class="form-row">
+                    <input type="text" placeholder="Date of birth dd/mm/yyyy">
+                    <select>
+                        <option value="">Relation</option>
+                        <option value="mother">Mother</option>
+                        <option value="father">Father</option>
+                        <option value="guardian">Guardian</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <input type="tel" placeholder="Phone Number">
+                    <input type="tel" placeholder="Phone Number 2">
+                </div>
+                <input type="email" placeholder="Email address">
+            </div>
+
+            <!-- Address Section -->
+            <div class="form-group">
+                <h3>Address</h3>
+                <input type="text" placeholder="Street address">
+                <div class="form-row">
+                    <input type="text" placeholder="City">
+                    <input type="text" placeholder="District">
+                    <input type="text" placeholder="Postal code">
+                </div>
+            </div>
+            
+            <!-- Sport Registration Section -->
+            <div class="form-group">
+                <h3>Sport Registration</h3>
+                <div class="form-row">
+                    <select>
+                        <option value="">Branch</option>
+                        <option value="swimming">Swimming</option>
+                        <option value="basketball">Basketball</option>
+                        <option value="football">Football</option>
+                        <option value="tennis">Tennis</option>
+                    </select>
+                    <select>
+                        <option value="">Sport type</option>
+                        <option value="individual">Individual</option>
+                        <option value="team">Team</option>
+                        <option value="training">Training</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Button Section -->
+            <div class="button-group">
+                <button type="button" class="btn-secondary">Cancel</button>
+                <button type="submit" class="btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
