@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "jfbjsRSLErBue1f86oFiG2uys/7iXQiS3HidGrv2NVADRGZNsYNbejuBLMFpqjXqXbDmTlpRRuuVZA7mCOqyVw==",
+  "success": true,
+  "projectFilePath": "/home/omer/Documents/webApp-proje/athlete-tracking/athlete-tracking.csproj",
+  "expectedPackageFiles": [
+    "/home/omer/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.10/microsoft.aspnetcore.app.ref.8.0.10.nupkg.sha512"
+  ],
+  "logs": []
+}

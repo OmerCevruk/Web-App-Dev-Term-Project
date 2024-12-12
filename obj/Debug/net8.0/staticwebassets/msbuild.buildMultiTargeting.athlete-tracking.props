@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/athlete-tracking.props" />
+</Project>

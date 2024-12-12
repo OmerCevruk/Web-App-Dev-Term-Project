@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Plan</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Payment Plan</h1>
+            <select class="child-selector">
+                <option>Customer 1</option>
+            </select>
+        </div>
+
+        <div class="dashboard-card">
+            <h2>Create payment plan</h2>
+            <form class="payment-form">
+                <div class="form-group">
+                    <label>Number of installments in months</label>
+                    <input type="number" value="12">
+                </div>
+                <div class="form-group">
+                    <label>Payment day (each month)</label>
+                    <input type="number" value="3" min="1" max="31">
+                </div>
+                <div class="form-group">
+                    <label>Start date</label>
+                    <input type="text" placeholder="dd/mm/yyyy">
+                </div>
+                <div class="form-group">
+                    <label>Total amount</label>
+                    <input type="text" value="30000TL">
+                </div>
+                <div class="form-group">
+                    <label>Plan status</label>
+                    <select>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
