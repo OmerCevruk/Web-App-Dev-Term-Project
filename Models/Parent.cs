@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AthleteTracker.Models
 {
-    public class Parent
+    public class Parent : BaseEntity
     {
         [Key]
         public int ParentId { get; set; }
@@ -18,9 +18,6 @@ namespace AthleteTracker.Models
         [Required]
         [StringLength(20)]
         public string EmergencyPhone { get; set; } = string.Empty;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("UserId")]
         public virtual User User { get; set; } = null!;

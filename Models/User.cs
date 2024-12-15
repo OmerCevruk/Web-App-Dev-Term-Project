@@ -11,7 +11,7 @@ namespace AthleteTracker.Models
         Staff
     }
 
-    public class User
+    public class User : BaseEntity
     {
         public int UserId { get; set; }
 
@@ -36,9 +36,6 @@ namespace AthleteTracker.Models
 
         public bool IsActive { get; set; } = true;
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }
 

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AthleteTracker.Models
 {
-    public class Student
+    public class Student : BaseEntity
     {
         [Key]
         public int StudentId { get; set; }
@@ -28,9 +28,6 @@ namespace AthleteTracker.Models
         public string? MedicalConditions { get; set; }
 
         public bool IsActive { get; set; } = true;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("ParentId")]
         public virtual Parent Parent { get; set; } = null!;

@@ -107,7 +107,7 @@ namespace AthleteTracker.Controllers
                     ParentId = parent.ParentId,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    DateOfBirth = model.DateOfBirth,
+                    DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc),
                     Gender = model.Gender,
                     MedicalConditions = model.MedicalConditions,
                     IsActive = true

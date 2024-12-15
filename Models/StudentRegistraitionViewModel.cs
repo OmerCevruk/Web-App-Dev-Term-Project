@@ -15,7 +15,7 @@ namespace AthleteTracker.Models
         [Required(ErrorMessage = "Date of birth is required")]
         [DataType(DataType.Date)]
         [Display(Name = "Date of Birth")]
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
 
         [Required(ErrorMessage = "Gender is required")]
         public char Gender { get; set; }
