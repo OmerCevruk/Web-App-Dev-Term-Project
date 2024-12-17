@@ -10,11 +10,16 @@ namespace AthleteTracker.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IConfiguration _configuration;
 
-        public RegistrationController(ApplicationDbContext context, IPasswordHasher<User> passwordHasher)
+        public RegistrationController(
+            ApplicationDbContext context,
+            IPasswordHasher<User> passwordHasher,
+            IConfiguration configuration)
         {
             _context = context;
             _passwordHasher = passwordHasher;
+            _configuration = configuration;
         }
         // Parent Controller
         [HttpGet]
@@ -174,6 +179,67 @@ namespace AthleteTracker.Controllers
                     };
 
                     _context.Instructors.Add(instructor);
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return RedirectToAction("Login", "Account");
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    ModelState.AddModelError(string.Empty, "Registration failed. Please try again.");
+                }
+            }
+
+            return View(model);
+        }
+
+        // Admin Controller
+        [HttpGet]
+        public IActionResult RegisterAdmin()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterAdmin(AdminRegistrationViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+
+                if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+                {
+                    ModelState.AddModelError("Email", "Email already registered");
+                    return View(model);
+                }
+
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    // Create user
+                    var user = new User
+                    {
+                        Email = model.Email,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Phone = model.Phone,
+                        Role = UserRole.Admin,
+                        IsActive = true
+                    };
+
+                    user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+                    _context.Users.Add(user);
+                    await _context.SaveChangesAsync();
+
+                    // Create admin profile (optional - if you want to store additional admin info)
+                    var admin = new Admin
+                    {
+                        UserId = user.UserId,
+                        Department = model.Department
+                    };
+
+                    _context.Admins.Add(admin);
                     await _context.SaveChangesAsync();
 
                     await transaction.CommitAsync();

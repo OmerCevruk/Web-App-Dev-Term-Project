@@ -38,6 +38,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/omer/Documents/webApp-proje/athlete-tracking/Views/Registration/RegisterAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVnaXN0cmF0aW9uL1JlZ2lzdGVyQWRtaW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/omer/Documents/webApp-proje/athlete-tracking/Views/Registration/RegisterInstructor.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVnaXN0cmF0aW9uL1JlZ2lzdGVySW5zdHJ1Y3Rvci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
