@@ -16,7 +16,7 @@ namespace AthleteTracker.Controllers
             _context = context;
             _passwordHasher = passwordHasher;
         }
-
+        // Parent Controller
         [HttpGet]
         public IActionResult RegisterParent()
         {
@@ -79,6 +79,7 @@ namespace AthleteTracker.Controllers
             return View(model);
         }
 
+        // Student Controller
         [HttpGet]
         public IActionResult RegisterStudent()
         {
@@ -125,6 +126,67 @@ namespace AthleteTracker.Controllers
         public IActionResult RegisterStudentSuccess()
         {
             return View();
+        }
+
+        // Instructor Controller
+        [HttpGet]
+        public IActionResult RegisterInstructor()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterInstructor(InstructorRegistrationViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+                {
+                    ModelState.AddModelError("Email", "Email already registered");
+                    return View(model);
+                }
+
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    // Create user
+                    var user = new User
+                    {
+                        Email = model.Email,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Phone = model.Phone,
+                        Role = UserRole.Instructor,
+                        IsActive = true
+                    };
+
+                    user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+                    _context.Users.Add(user);
+                    await _context.SaveChangesAsync();
+
+                    // Create instructor
+                    var instructor = new Instructor
+                    {
+                        UserId = user.UserId,
+                        Specialization = model.Specialization,
+                        HireDate = DateTime.SpecifyKind(model.HireDate.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc)
+                    };
+
+                    _context.Instructors.Add(instructor);
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return RedirectToAction("Login", "Account");
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    ModelState.AddModelError(string.Empty, "Registration failed. Please try again.");
+                }
+            }
+
+            return View(model);
         }
     }
 }
