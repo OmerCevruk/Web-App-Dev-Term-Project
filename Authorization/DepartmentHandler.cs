@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AthleteTracker.Authorization
 {
-    public class DepartmentHandler : AuthorizationHandler<DepartmentRequirement>
+    public class DepartmentHandler : IAuthorizationHandler
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -15,37 +15,37 @@ namespace AthleteTracker.Authorization
             _httpContextAccessor = httpContextAccessor;
         }
 
-        protected override async Task HandleRequirementAsync(
-            AuthorizationHandlerContext context,
-            DepartmentRequirement requirement)
+        public async Task HandleAsync(AuthorizationHandlerContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !user.Identity?.IsAuthenticated == true)
+            foreach (var requirement in context.Requirements.OfType<DepartmentRequirement>())
             {
-                return;
-            }
+                var user = _httpContextAccessor.HttpContext?.User;
+                if (user == null || !user.Identity?.IsAuthenticated == true)
+                {
+                    continue;
+                }
 
-            // Check if user is admin
-            var isAdmin = user.IsInRole("Admin");
-            if (!isAdmin)
-            {
-                return;
-            }
+                // Check if user is admin
+                if (!user.IsInRole("Admin"))
+                {
+                    continue;
+                }
 
-            // Get user ID from claims
-            var userIdClaim = user.FindFirst("UserId");
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return;
-            }
+                // Get user ID from claims
+                var userIdClaim = user.FindFirst("UserId");
+                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    continue;
+                }
 
-            // Get admin's department
-            var admin = await _context.Admins
-                .FirstOrDefaultAsync(a => a.UserId == userId);
+                // Get admin's department
+                var admin = await _context.Admins
+                    .FirstOrDefaultAsync(a => a.UserId == userId);
 
-            if (admin != null && requirement.AllowedDepartments.Contains(admin.Department))
-            {
-                context.Succeed(requirement);
+                if (admin != null && requirement.AllowedDepartments.Contains(admin.Department))
+                {
+                    context.Succeed(requirement);
+                }
             }
         }
     }

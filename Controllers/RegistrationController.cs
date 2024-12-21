@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using AthleteTracker.Data;
 using AthleteTracker.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AthleteTracker.Controllers
 {
@@ -135,6 +136,7 @@ namespace AthleteTracker.Controllers
 
         // Instructor Controller
         [HttpGet]
+        [Authorize(Policy = "HRManagementOnly")]
         public IActionResult RegisterInstructor()
         {
             return View();
@@ -142,6 +144,7 @@ namespace AthleteTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "HRManagementOnly")]
         public async Task<IActionResult> RegisterInstructor(InstructorRegistrationViewModel model)
         {
             if (ModelState.IsValid)

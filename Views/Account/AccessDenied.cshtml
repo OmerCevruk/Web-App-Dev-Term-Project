@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-body text-center">
+                    <h1 class="text-danger mb-4">Access Denied</h1>
+                    <p class="lead mb-4">Sorry, you don't have permission to access this resource.</p>
+                    
+                    <div class="d-grid gap-3 col-6 mx-auto">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                            Return to Home
+                        </a>
+                        
+                        @if (!User.Identity?.IsAuthenticated == true)
+                        {
+                            <a asp-controller="Account" asp-action="Login" 
+                               asp-route-returnUrl="@Context.Request.Path" 
+                               class="btn btn-outline-primary">
+                                Login with Different Account
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

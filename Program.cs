@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using AthleteTracker.Data;
 using AthleteTracker.Models;
 using AthleteTracker.Authorization;
@@ -29,7 +30,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // Add password hasher
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
-// auth
+// Add HttpContext accessor
+builder.Services.AddHttpContextAccessor();
+
+// Add authorization
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("HRManagementOnly", policy =>
@@ -39,9 +43,8 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new DepartmentRequirement("IT")));
 });
 
-// Register the handler
+// Register the authorization handler
 builder.Services.AddScoped<IAuthorizationHandler, DepartmentHandler>();
-builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
