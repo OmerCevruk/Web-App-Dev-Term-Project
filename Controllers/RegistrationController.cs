@@ -22,6 +22,7 @@ namespace AthleteTracker.Controllers
             _passwordHasher = passwordHasher;
             _configuration = configuration;
         }
+
         // Parent Controller
         [HttpGet]
         public IActionResult RegisterParent()
@@ -87,6 +88,7 @@ namespace AthleteTracker.Controllers
 
         // Student Controller
         [HttpGet]
+        [Authorize(Policy = "HR")]
         public IActionResult RegisterStudent()
         {
             return View();
@@ -95,6 +97,7 @@ namespace AthleteTracker.Controllers
         // user submits student login
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "HR")]
         public async Task<IActionResult> RegisterStudent(StudentRegistrationViewModel model)
         {
             if (ModelState.IsValid)
@@ -136,7 +139,7 @@ namespace AthleteTracker.Controllers
 
         // Instructor Controller
         [HttpGet]
-        [Authorize(Policy = "HRManagementOnly")]
+        [Authorize(Policy = "HR")]
         public IActionResult RegisterInstructor()
         {
             return View();
@@ -144,7 +147,7 @@ namespace AthleteTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "HRManagementOnly")]
+        [Authorize(Policy = "HR")]
         public async Task<IActionResult> RegisterInstructor(InstructorRegistrationViewModel model)
         {
             if (ModelState.IsValid)
@@ -199,6 +202,7 @@ namespace AthleteTracker.Controllers
 
         // Admin Controller
         [HttpGet]
+        [Authorize(Policy = "IT")]
         public IActionResult RegisterAdmin()
         {
             return View();
@@ -206,6 +210,7 @@ namespace AthleteTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "IT")]
         public async Task<IActionResult> RegisterAdmin(AdminRegistrationViewModel model)
         {
             if (ModelState.IsValid)

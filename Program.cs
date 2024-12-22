@@ -36,11 +36,18 @@ builder.Services.AddHttpContextAccessor();
 // Add authorization
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("HRManagementOnly", policy =>
+    options.AddPolicy("HR", policy =>
         policy.Requirements.Add(new DepartmentRequirement("HR", "Management")));
+
+    options.AddPolicy("HROnly", policy =>
+        policy.Requirements.Add(new DepartmentRequirement("HR")));
+
+    options.AddPolicy("IT", policy =>
+        policy.Requirements.Add(new DepartmentRequirement("IT", "Management")));
 
     options.AddPolicy("ITOnly", policy =>
         policy.Requirements.Add(new DepartmentRequirement("IT")));
+
 });
 
 // Register the authorization handler
