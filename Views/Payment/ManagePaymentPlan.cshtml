@@ -1,3 +1,4 @@
+@using AthleteTracker.Models
 @model AthleteTracker.Models.PaymentPlanViewModel
 @{
     ViewData["Title"] = "Create Payment Plan";
@@ -8,34 +9,35 @@
         <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Create Payment Plan</h5>
+                    <h5 class="mb-0">Create Payment Plan for @Model.StudentName</h5>
                 </div>
                 <div class="card-body">
                     <form asp-action="CreatePaymentPlan" method="post">
-                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <input type="hidden" asp-for="StudentId" />
+                        <input type="hidden" asp-for="StudentName" />
 
                         <div class="mb-3">
                             <label asp-for="TotalAmount" class="form-label"></label>
                             <div class="input-group">
                                 <span class="input-group-text">₺</span>
-                                <input asp-for="TotalAmount" class="form-control" type="number" step="0.01" required />
+                                <input asp-for="TotalAmount" class="form-control" type="number" step="0.01" min="0.01" />
                             </div>
                             <span asp-validation-for="TotalAmount" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="NumberOfInstallments" class="form-label"></label>
-                            <input asp-for="NumberOfInstallments" class="form-control" type="number" min="1" max="24" required />
+                            <input asp-for="NumberOfInstallments" class="form-control" type="number" min="1" max="24" />
                             <span asp-validation-for="NumberOfInstallments" class="text-danger"></span>
-                            <small class="form-text text-muted">Choose between 1 and 24 months</small>
+                            <small class="form-text text-muted">Enter a number between 1 and 24 months</small>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="PaymentDay" class="form-label"></label>
-                            <input asp-for="PaymentDay" class="form-control" type="number" min="1" max="31" required />
+                            <input asp-for="PaymentDay" class="form-control" type="number" min="1" max="31" />
                             <span asp-validation-for="PaymentDay" class="text-danger"></span>
-                            <small class="form-text text-muted">Day of the month when payment is due (1-31)</small>
+                            <small class="form-text text-muted">Enter the day of month when payment is due (1-31)</small>
                         </div>
 
                         <div class="d-grid gap-2">
