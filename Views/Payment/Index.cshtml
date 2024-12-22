@@ -1,0 +1,143 @@
+@using AthleteTracker.Models
+@model IEnumerable<AthleteTracker.Models.Payment>
+
+@{
+    ViewData["Title"] = "Payment Overview";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Payment Overview</h5>
+                    @if (User.IsInRole("Parent"))
+                    {
+                        <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#makePaymentModal">
+                            Make Payment
+                        </button>
+                    }
+                </div>
+                <div class="card-body">
+                    <!-- Payment Summary -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Total Amount</h6>
+                                    <h4 class="mb-0">@Model.Sum(p => p.Amount).ToString("C")</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Paid Amount</h6>
+                                    <h4 class="mb-0">@Model.Where(p => p.Status == PaymentStatus.Paid).Sum(p => p.Amount).ToString("C")</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Remaining Amount</h6>
+                                    <h4 class="mb-0">@Model.Where(p => p.Status == PaymentStatus.Pending).Sum(p => p.Amount).ToString("C")</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment History Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Due Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Payment Date</th>
+                                    <th>Payment Method</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var payment in Model.OrderBy(p => p.DueDate))
+                                {
+                                    <tr>
+                                        <td>@payment.DueDate.ToString("d")</td>
+                                        <td>@payment.Amount.ToString("C")</td>
+                                        <td>
+                                            <span class="badge bg-@(payment.Status == PaymentStatus.Paid ? "success" : "warning")">
+                                                @payment.Status
+                                            </span>
+                                        </td>
+                                        <td>@(payment.PaymentDate?.ToString("d") ?? "-")</td>
+                                        <td>@(payment.PaymentMethod ?? "-")</td>
+                                        <td>
+                                            @if (payment.Status == PaymentStatus.Pending)
+                                            {
+                                                <button class="btn btn-primary btn-sm" 
+                                                        onclick="preparePayment(@payment.PaymentId, @payment.Amount)"
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#makePaymentModal">
+                                                    Pay Now
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Make Payment Modal -->
+<div class="modal fade" id="makePaymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="MakePayment" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Make Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="paymentId" name="paymentId" />
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input type="text" id="paymentAmount" class="form-control" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Payment Method</label>
+                        <select name="paymentMethod" class="form-select" required>
+                            <option value="">Select payment method</option>
+                            <option value="CreditCard">Credit Card</option>
+                            <option value="BankTransfer">Bank Transfer</option>
+                            <option value="Cash">Cash</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Confirm Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function preparePayment(paymentId, amount) {
+            document.getElementById('paymentId').value = paymentId;
+            document.getElementById('paymentAmount').value = amount.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'TRY'
+            });
+        }
+    </script>
+}
