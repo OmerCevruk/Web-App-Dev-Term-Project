@@ -19,10 +19,15 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Enrollment" asp-action="Create">Create Enrollment</a>
+                        </li>
+
                         <!-- Department Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -36,22 +41,25 @@
                                 <li><a class="dropdown-item" asp-controller="Registration" asp-action="RegisterStudent">Student Registration</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" asp-controller="Account" asp-action="Login">Login</a></li>
+
                             </ul>
                         </li>
+
+                        <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle text-dark" href="#" id="paymentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Payments
+                          </a>
+                          <ul class="dropdown-menu" aria-labelledby="paymentDropdown">
+                            <li><a class="dropdown-item" asp-controller="Payment" asp-action="Index">View Payments</a></li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                            <li><a class="dropdown-item" asp-controller="Payment" asp-action="ManagePaymentPlan">Manage Payment Plans</a></li>
+                            }
+                          </ul>
+                        </li>
+
                     </ul>
 
-                    <ul class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="paymentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Payments
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="paymentDropdown">
-                                <li><a class="dropdown-item" asp-controller="Payment" asp-action="Index">View Payments</a></li>
-                                @if (User.IsInRole("Admin"))
-                                {
-                                    <li><a class="dropdown-item" asp-controller="Payment" asp-action="ManagePaymentPlan">Manage Payment Plans</a></li>
-                                }
-                            </ul>
-                    </ul>
                     
                     <!-- Login/Register buttons -->
                     <ul class="navbar-nav">

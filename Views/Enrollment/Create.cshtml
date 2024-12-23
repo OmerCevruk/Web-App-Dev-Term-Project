@@ -1,0 +1,88 @@
+@using AthleteTracker.Models
+@model EnrollmentViewModel
+
+@{
+    ViewData["Title"] = "Create Enrollment";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Create Enrollment for @Model.StudentName</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="StudentId" />
+                        <input type="hidden" asp-for="StudentName" />
+
+                        <div class="mb-4">
+                            <label asp-for="SessionId" class="form-label"></label>
+                            <select asp-for="SessionId" class="form-select">
+                                <option value="">Select a Session</option>
+                                @foreach (var session in Model.AvailableSessions)
+                                {
+                                    if (session.CurrentEnrollments >= session.MaxCapacity)
+                                    {
+                                        <option value="@session.SessionId" disabled>
+                                            @session.SessionName - @session.InstructorName
+                                            (@session.Schedule) - FULL
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@session.SessionId">
+                                            @session.SessionName - @session.InstructorName
+                                            (@session.Schedule) - @session.CurrentEnrollments/@session.MaxCapacity spots
+                                        </option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="SessionId" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="StartDate" class="form-label"></label>
+                                <input asp-for="StartDate" class="form-control" type="date" />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="EndDate" class="form-label"></label>
+                                <input asp-for="EndDate" class="form-control" type="date" />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create Enrollment</button>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const startDateInput = document.querySelector('#StartDate');
+            const endDateInput = document.querySelector('#EndDate');
+
+            startDateInput.addEventListener('change', function() {
+                const startDate = new Date(this.value);
+                const endDate = new Date(endDateInput.value);
+                
+                if (endDate < startDate) {
+                    endDateInput.value = this.value;
+                }
+                endDateInput.min = this.value;
+            });
+        });
+    </script>
+}

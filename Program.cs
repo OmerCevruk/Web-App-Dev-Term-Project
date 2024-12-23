@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using AthleteTracker.Data;
 using AthleteTracker.Models;
 using AthleteTracker.Authorization;
+using AthleteTracker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +33,8 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 // Add HttpContext accessor
 builder.Services.AddHttpContextAccessor();
-
+// student selection services
+builder.Services.AddScoped<IStudentService, StudentService>();
 // Add authorization
 builder.Services.AddAuthorization(options =>
 {

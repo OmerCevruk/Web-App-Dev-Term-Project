@@ -1,5 +1,5 @@
 @using AthleteTracker.Models
-@model IEnumerable<AthleteTracker.Models.StudentSelectViewModel>
+@model StudentSelectionViewModel
 
 @{
     ViewData["Title"] = "Select Student";
@@ -10,7 +10,7 @@
         <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Select Student for Payment Plan</h5>
+                    <h5 class="mb-0">Select Student</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -23,16 +23,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var student in Model)
+                                @foreach (var student in Model.Students)
                                 {
                                     <tr>
                                         <td>@student.FullName</td>
                                         <td>@student.ParentName</td>
                                         <td>
-                                            <a asp-action="ManagePaymentPlan" 
-                                               asp-route-studentId="@student.StudentId" 
+                                            <a href="@Model.GetActionUrl(student.StudentId)" 
                                                class="btn btn-primary btn-sm">
-                                                Create Payment Plan
+                                                @Model.ActionText
                                             </a>
                                         </td>
                                     </tr>

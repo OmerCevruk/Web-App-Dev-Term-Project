@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using AthleteTracker.Data;
 using AthleteTracker.Models;
+using AthleteTracker.Services;
 
 namespace AthleteTracker.Controllers
 {
@@ -10,48 +11,61 @@ namespace AthleteTracker.Controllers
     public class PaymentController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IStudentService _studentService;
 
-        public PaymentController(ApplicationDbContext context)
+        public PaymentController(
+            ApplicationDbContext context,
+            IStudentService studentService)
         {
             _context = context;
+            _studentService = studentService;
         }
 
+        // GET: Payment/Index
+        public async Task<IActionResult> Index()
+        {
+            var userId = User.FindFirst("UserId")?.Value;
+            if (userId == null) return Challenge();
+
+            var payments = await _context.Payments
+                .Include(p => p.Plan)
+                .ThenInclude(p => p.Enrollment)
+                .ThenInclude(e => e.Student)
+                .Where(p => p.Plan.Enrollment.Student.Parent.UserId == int.Parse(userId))
+                .ToListAsync();
+
+            return View(payments);
+        }
+
+        // GET: Payment/ManagePaymentPlan
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ManagePaymentPlan(int? studentId)
         {
             if (!studentId.HasValue)
             {
-                var students = await _context.Students
-                    .Include(s => s.Parent)
-                    .ThenInclude(p => p.User)
-                    .Where(s => s.IsActive)
-                    .Select(s => new StudentSelectViewModel
-                    {
-                        StudentId = s.StudentId,
-                        FullName = $"{s.FirstName} {s.LastName}",
-                        ParentName = $"{s.Parent.User.FirstName} {s.Parent.User.LastName}"
-                    })
-                    .ToListAsync();
+                var selectionViewModel = await _studentService.GetStudentSelectionList(
+                    "Payment",
+                    "ManagePaymentPlan",
+                    "Create Payment Plan");
 
-                return View("SelectStudent", students);
+                return View("~/Views/Shared/SelectStudent.cshtml", selectionViewModel);
             }
 
-            var student = await _context.Students
-                .FirstOrDefaultAsync(s => s.StudentId == studentId);
-
+            var student = await _studentService.GetStudentById(studentId.Value);
             if (student == null)
                 return NotFound();
 
-            var viewModel = new PaymentPlanViewModel
+            var paymentViewModel = new PaymentPlanViewModel
             {
                 StudentId = student.StudentId,
                 StudentName = $"{student.FirstName} {student.LastName}"
             };
 
-            return View(viewModel);
+            return View(paymentViewModel);
         }
 
+        // POST: Payment/CreatePaymentPlan
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
@@ -59,7 +73,7 @@ namespace AthleteTracker.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var student = await _context.Students.FirstOrDefaultAsync(s => s.StudentId == model.StudentId);
+                var student = await _studentService.GetStudentById(model.StudentId);
                 if (student != null)
                 {
                     model.StudentName = $"{student.FirstName} {student.LastName}";
@@ -67,6 +81,7 @@ namespace AthleteTracker.Controllers
                 return View("ManagePaymentPlan", model);
             }
 
+            // Get active enrollment for student
             var enrollment = await _context.Enrollments
                 .FirstOrDefaultAsync(e => e.StudentId == model.StudentId && e.IsActive);
 
@@ -79,6 +94,7 @@ namespace AthleteTracker.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
+                // Create payment plan
                 var plan = new PaymentPlan
                 {
                     EnrollmentId = enrollment.EnrollmentId,
@@ -90,6 +106,7 @@ namespace AthleteTracker.Controllers
                 _context.PaymentPlans.Add(plan);
                 await _context.SaveChangesAsync();
 
+                // Create individual payments
                 var monthlyAmount = Math.Round(model.TotalAmount / model.NumberOfInstallments, 2);
                 var remainingAmount = model.TotalAmount;
 
@@ -98,6 +115,7 @@ namespace AthleteTracker.Controllers
                     decimal installmentAmount;
                     if (i == model.NumberOfInstallments - 1)
                     {
+                        // Last payment accounts for any rounding differences
                         installmentAmount = remainingAmount;
                     }
                     else
@@ -129,6 +147,23 @@ namespace AthleteTracker.Controllers
                 ModelState.AddModelError("", "An error occurred while creating the payment plan. Please try again.");
                 return View("ManagePaymentPlan", model);
             }
+        }
+
+        // POST: Payment/MakePayment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MakePayment(int paymentId, string paymentMethod)
+        {
+            var payment = await _context.Payments.FindAsync(paymentId);
+            if (payment == null)
+                return NotFound();
+
+            payment.PaymentDate = DateTime.UtcNow;
+            payment.Status = PaymentStatus.Paid;
+            payment.PaymentMethod = paymentMethod;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
