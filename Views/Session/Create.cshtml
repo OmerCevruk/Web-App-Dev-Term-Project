@@ -1,0 +1,98 @@
+@model AthleteTracker.Models.SessionManagementViewModel
+@{
+    ViewData["Title"] = "Create Session";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Create New Session</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="SessionName" class="form-label"></label>
+                            <input asp-for="SessionName" class="form-control" />
+                            <span asp-validation-for="SessionName" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="BranchId" class="form-label"></label>
+                                <select asp-for="BranchId" class="form-select">
+                                    <option value="">Select Branch</option>
+                                    @foreach (var branch in Model.AvailableBranches)
+                                    {
+                                        <option value="@branch.BranchId">
+                                            @branch.BranchName (@branch.CenterName)
+                                        </option>
+                                    }
+                                </select>
+                                <span asp-validation-for="BranchId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="InstructorId" class="form-label"></label>
+                                <select asp-for="InstructorId" class="form-select">
+                                    <option value="">Select Instructor</option>
+                                    @foreach (var instructor in Model.AvailableInstructors)
+                                    {
+                                        <option value="@instructor.InstructorId">
+                                            @instructor.FullName (@instructor.Specialization)
+                                        </option>
+                                    }
+                                </select>
+                                <span asp-validation-for="InstructorId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="DayOfWeek" class="form-label"></label>
+                                <select asp-for="DayOfWeek" class="form-select">
+                                    <option value="">Select Day</option>
+                                    <option value="1">Monday</option>
+                                    <option value="2">Tuesday</option>
+                                    <option value="3">Wednesday</option>
+                                    <option value="4">Thursday</option>
+                                    <option value="5">Friday</option>
+                                    <option value="6">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                </select>
+                                <span asp-validation-for="DayOfWeek" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="StartTime" class="form-label"></label>
+                                <input asp-for="StartTime" class="form-control" type="time" />
+                                <span asp-validation-for="StartTime" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="EndTime" class="form-label"></label>
+                                <input asp-for="EndTime" class="form-control" type="time" />
+                                <span asp-validation-for="EndTime" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MaxCapacity" class="form-label"></label>
+                            <input asp-for="MaxCapacity" class="form-control" type="number" min="1" max="100" />
+                            <span asp-validation-for="MaxCapacity" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create Session</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

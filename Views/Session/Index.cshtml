@@ -1,0 +1,139 @@
+@model IEnumerable<AthleteTracker.Models.SessionIndexViewModel>
+@using AthleteTracker.Models
+@{
+    ViewData["Title"] = "Sessions";
+    string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Sessions</h2>
+        <a asp-action="Create" class="btn btn-primary">Create New Session</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Session Name</th>
+                            <th>Branch</th>
+                            <th>Instructor</th>
+                            <th>Schedule</th>
+                            <th>Capacity</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var session in Model)
+                        {
+                            string statusClass = session.Status switch
+                            {
+                                SessionStatus.Active => "bg-success",
+                                SessionStatus.Cancelled => "bg-danger",
+                                SessionStatus.Completed => "bg-secondary",
+                                SessionStatus.OnHold => "bg-warning",
+                                _ => "bg-secondary"
+                            };
+
+                            <tr>
+                                <td>@session.SessionName</td>
+                                <td>@session.BranchName</td>
+                                <td>@session.InstructorName</td>
+                                <td>
+                                    @days[session.DayOfWeek - 1]
+                                    @session.StartTime.ToString("HH:mm") - @session.EndTime.ToString("HH:mm")
+                                </td>
+                                <td>
+                                    <span class="@(session.CurrentEnrollments >= session.MaxCapacity ? "text-danger" : "text-success")">
+                                        @session.CurrentEnrollments / @session.MaxCapacity
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge @statusClass">@session.Status</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                type="button" 
+                                                data-bs-toggle="dropdown" 
+                                                aria-expanded="false">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" 
+                                                   asp-action="Edit" 
+                                                   asp-route-id="@session.SessionId">
+                                                    Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" 
+                                                   asp-action="Details" 
+                                                   asp-route-id="@session.SessionId">
+                                                    Details
+                                                </a>
+                                            </li>
+                                            @if (session.Status == SessionStatus.Active)
+                                            {
+                                                <li>
+                                                    <button class="dropdown-item text-danger"
+                                                            onclick="confirmCancelSession(@session.SessionId)">
+                                                        Cancel Session
+                                                    </button>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Session Modal -->
+<div class="modal fade" id="cancelSessionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Session</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this session? This will affect all enrolled students.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form asp-action="CancelSession" method="post" id="cancelSessionForm">
+                    <input type="hidden" id="sessionIdToCancel" name="sessionId" />
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Cancel Session</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmCancelSession(sessionId) {
+            document.getElementById('sessionIdToCancel').value = sessionId;
+            new bootstrap.Modal(document.getElementById('cancelSessionModal')).show();
+        }
+    </script>
+}
