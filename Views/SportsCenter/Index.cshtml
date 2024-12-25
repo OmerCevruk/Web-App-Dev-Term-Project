@@ -1,0 +1,65 @@
+@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Sports Centers";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Sports Centers</h2>
+        <a asp-action="Create" class="btn btn-primary">Create New Center</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Center Name</th>
+                            <th>Address</th>
+                            <th>Contact</th>
+                            <th>Branches</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var center in Model)
+                        {
+                            <tr>
+                                <td>@center.CenterName</td>
+                                <td>@center.Address</td>
+                                <td>
+                                    <div>📞 @center.Phone</div>
+                                    <div>📧 @center.Email</div>
+                                </td>
+                                <td>@center.BranchCount</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" asp-action="Edit" 
+                                                  asp-route-id="@center.CenterId">Edit</a></li>
+                                            <li><a class="dropdown-item" asp-action="Details" 
+                                                  asp-route-id="@center.CenterId">Details</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

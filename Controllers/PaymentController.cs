@@ -149,7 +149,6 @@ namespace AthleteTracker.Controllers
             }
         }
 
-        // POST: Payment/MakePayment
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MakePayment(int paymentId, string paymentMethod)
@@ -164,6 +163,24 @@ namespace AthleteTracker.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ManagementDashboard()
+        {
+            var payments = await _context.Payments
+                .Include(p => p.Plan)
+                  .ThenInclude(p => p.Enrollment)
+                  .ThenInclude(e => e.Student)
+                  .ThenInclude(s => s.Parent)
+                  .ThenInclude(p => p.User)
+                    .Include(p => p.Plan)
+                .ThenInclude(p => p.Enrollment)
+                  .ThenInclude(e => e.Session)
+                    .OrderBy(p => p.DueDate)
+                .ToListAsync();
+
+            return View(payments);
         }
     }
 }

@@ -52,7 +52,8 @@
                                 <td>@session.InstructorName</td>
                                 <td>
                                     @days[session.DayOfWeek - 1]
-                                    @session.StartTime.ToString("HH:mm") - @session.EndTime.ToString("HH:mm")
+                                    @session.StartTime.Hours.ToString("00"):@session.StartTime.Minutes.ToString("00") - 
+                                    @session.EndTime.Hours.ToString("00"):@session.EndTime.Minutes.ToString("00")
                                 </td>
                                 <td>
                                     <span class="@(session.CurrentEnrollments >= session.MaxCapacity ? "text-danger" : "text-success")">

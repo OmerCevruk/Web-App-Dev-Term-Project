@@ -32,7 +32,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Branch" asp-action="Index">Branch</a>
                         </li>
-
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="SportsCenter" asp-action="Index">Sports Centers</a>
+                        </li>
                         <!-- Department Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -55,10 +57,18 @@
                             Payments
                           </a>
                           <ul class="dropdown-menu" aria-labelledby="paymentDropdown">
-                            <li><a class="dropdown-item" asp-controller="Payment" asp-action="Index">View Payments</a></li>
+                            <li>
+                            <a class="dropdown-item" asp-controller="Payment" asp-action="Index">View Payments</a>
+                            </li>
                             @if (User.IsInRole("Admin"))
                             {
-                            <li><a class="dropdown-item" asp-controller="Payment" asp-action="ManagePaymentPlan">Manage Payment Plans</a></li>
+                            <li>
+                            <a class="dropdown-item" asp-controller="Payment" asp-action="ManagePaymentPlan">Manage Payment Plans</a>
+                            </li>
+
+                            <li>
+                            <a class="dropdown-item" asp-controller="Payment" asp-action="ManagementDashboard">Payments(admin)</a>
+                            </li>
                             }
                           </ul>
                         </li>

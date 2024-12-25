@@ -1,0 +1,85 @@
+@using AthleteTracker.Models
+@model IEnumerable<Payment>
+@{
+    ViewData["Title"] = "Payment Management Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <h2>Payment Management</h2>
+
+    @foreach (var payment in Model.GroupBy(p => p.Plan))
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">@payment.Key.Enrollment.Student.FirstName @payment.Key.Enrollment.Student.LastName</h5>
+                        <small class="text-muted">
+                            Parent: @payment.Key.Enrollment.Student.Parent.User.FirstName @payment.Key.Enrollment.Student.Parent.User.LastName | 
+                            Session: @payment.Key.Enrollment.Session.SessionName
+                        </small>
+                    </div>
+                    <div class="text-end">
+                        <h6 class="mb-0">Total: @payment.Key.TotalAmount.ToString("C")</h6>
+                        <small class="text-muted">@payment.Key.NumberOfInstallments installments (Day @payment.Key.PaymentDay)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Payment Date</th>
+                                <th>Method</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var installment in payment.OrderBy(p => p.DueDate))
+                            {
+                                string statusClass = installment.Status switch
+                                {
+                                    PaymentStatus.Paid => "success",
+                                    PaymentStatus.Overdue => "danger",
+                                    PaymentStatus.Pending => "warning",
+                                    PaymentStatus.Cancelled => "secondary",
+                                    _ => "secondary"
+                                };
+
+                                <tr>
+                                    <td>@installment.DueDate.ToString("d")</td>
+                                    <td>@installment.Amount.ToString("C")</td>
+                                    <td><span class="badge bg-@statusClass">@installment.Status</span></td>
+                                    <td>@(installment.PaymentDate?.ToString("d") ?? "-")</td>
+                                    <td>@(installment.PaymentMethod ?? "-")</td>
+                                    <td>
+                                        @if (installment.Status == PaymentStatus.Pending || installment.Status == PaymentStatus.Overdue)
+                                        {
+                                            <button class="btn btn-sm btn-success" 
+                                                    onclick="recordPayment(@installment.PaymentId)">
+                                                Record Payment
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function recordPayment(paymentId) {
+            document.getElementById('paymentId').value = paymentId;
+            new bootstrap.Modal(document.getElementById('paymentModal')).show();
+        }
+    </script>
+}
