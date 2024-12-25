@@ -26,6 +26,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9Mb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/omer/Documents/webApp-proje/athlete-tracking/Views/Branch/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQnJhbmNoL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/omer/Documents/webApp-proje/athlete-tracking/Views/Branch/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQnJhbmNoL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/omer/Documents/webApp-proje/athlete-tracking/Views/Enrollment/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRW5yb2xsbWVudC9DcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

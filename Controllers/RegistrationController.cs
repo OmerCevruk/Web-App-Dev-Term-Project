@@ -240,7 +240,7 @@ namespace AthleteTracker.Controllers
                     _context.Users.Add(user);
                     await _context.SaveChangesAsync();
 
-                    // Create admin profile (optional - if you want to store additional admin info)
+                    // Create admin profile
                     var admin = new Admin
                     {
                         UserId = user.UserId,

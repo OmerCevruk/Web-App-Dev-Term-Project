@@ -1,0 +1,94 @@
+@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Branches";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Branches</h2>
+        <a asp-action="Create" class="btn btn-primary">Create New Branch</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-info">
+                    @ViewBag.Message
+                </div>
+            }
+            else if (!Model.Any())
+            {
+                <div class="alert alert-info">
+                    No branches available. Click "Create New Branch" to add one.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Branch Name</th>
+                                <th>Sports Center</th>
+                                <th>Address</th>
+                                <th>Contact</th>
+                                <th>Active Sessions</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var branch in Model)
+                            {
+                                <tr>
+                                    <td>@branch.BranchName</td>
+                                    <td>@branch.CenterName</td>
+                                    <td>@branch.Address</td>
+                                    <td>
+                                        <div>📞 @branch.Phone</div>
+                                        <div>📧 @branch.Email</div>
+                                    </td>
+                                    <td>@branch.SessionCount</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                    type="button" 
+                                                    data-bs-toggle="dropdown" 
+                                                    aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" 
+                                                       asp-action="Edit" 
+                                                       asp-route-id="@branch.BranchId">
+                                                        Edit
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" 
+                                                       asp-action="Details" 
+                                                       asp-route-id="@branch.BranchId">
+                                                        Details
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
