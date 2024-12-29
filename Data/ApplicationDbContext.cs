@@ -23,7 +23,7 @@ namespace AthleteTracker.Data
         public DbSet<PaymentPlan> PaymentPlans { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<InstructorBranch> InstructorBranches { get; set; }
-
+        public DbSet<DevelopmentRecord> DevelopmentRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -108,6 +108,17 @@ namespace AthleteTracker.Data
                 .HasOne(p => p.Plan)
                 .WithMany(p => p.Payments)
                 .HasForeignKey(p => p.PlanId);
+
+            modelBuilder.Entity<DevelopmentRecord>()
+                       .HasOne(d => d.Student)
+                       .WithMany()
+                       .HasForeignKey(d => d.StudentId)
+                       .OnDelete(DeleteBehavior.Restrict);
+
+            // Index for better querry speed
+            modelBuilder.Entity<DevelopmentRecord>()
+                .HasIndex(d => d.StudentId);
+
 
             // Configure timestamp columns
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())

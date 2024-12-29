@@ -1,0 +1,64 @@
+@using AthleteTracker.Models
+@model DevelopmentRecordInputModel
+
+@{
+    ViewData["Title"] = "Add Development Record";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Add Development Record for @ViewBag.StudentName</h4>
+                    
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="StudentId" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="RecordDate" class="form-label"></label>
+                            <input asp-for="RecordDate" class="form-control" type="date" />
+                            <span asp-validation-for="RecordDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Height" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="Height" class="form-control" type="number" step="0.01" />
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                                <span asp-validation-for="Height" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Weight" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="Weight" class="form-control" type="number" step="0.01" />
+                                    <span class="input-group-text">kg</span>
+                                </div>
+                                <span asp-validation-for="Weight" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="InstructorComments" class="form-label"></label>
+                            <textarea asp-for="InstructorComments" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="InstructorComments" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Save Record</button>
+                            <a asp-action="Index" asp-route-studentId="@Model.StudentId" 
+                               class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

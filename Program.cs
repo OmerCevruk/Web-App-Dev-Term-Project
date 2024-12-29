@@ -50,6 +50,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ITOnly", policy =>
         policy.Requirements.Add(new DepartmentRequirement("IT")));
 
+    options.AddPolicy("Coach", policy =>
+        policy.Requirements.Add(new DepartmentRequirement("Coach")));
 });
 
 // Register the authorization handler
