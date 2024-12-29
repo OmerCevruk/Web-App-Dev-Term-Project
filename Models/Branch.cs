@@ -31,5 +31,7 @@ namespace AthleteTracker.Models
         public virtual SportsCenter Center { get; set; } = null!;
 
         public virtual ICollection<Session> Sessions { get; set; } = new List<Session>();
+        public virtual ICollection<InstructorBranch> InstructorBranches { get; set; } = new List<InstructorBranch>();
     }
 }
+

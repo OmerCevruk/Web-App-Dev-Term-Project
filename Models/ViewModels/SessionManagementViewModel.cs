@@ -41,13 +41,6 @@ namespace AthleteTracker.Models
         public List<InstructorViewModel> AvailableInstructors { get; set; } = new();
     }
 
-    public class BranchViewModel
-    {
-        public int BranchId { get; set; }
-        public string BranchName { get; set; } = string.Empty;
-        public string CenterName { get; set; } = string.Empty;
-    }
-
     public class InstructorViewModel
     {
         public int InstructorId { get; set; }

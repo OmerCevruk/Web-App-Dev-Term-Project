@@ -140,9 +140,45 @@ namespace AthleteTracker.Controllers
         // Instructor Controller
         [HttpGet]
         [Authorize(Policy = "HR")]
-        public IActionResult RegisterInstructor()
+        public async Task<IActionResult> RegisterInstructor()
         {
-            return View();
+            try
+            {
+                var viewModel = new InstructorRegistrationViewModel
+                {
+                    AvailableBranches = await _context.Branches
+                        .Include(b => b.Center)
+                        .Select(b => new BranchViewModel
+                        {
+                            BranchId = b.BranchId,
+                            BranchName = b.BranchName,
+                            CenterName = b.Center.CenterName
+                        })
+                        .ToListAsync()
+                };
+
+                // Initialize other properties to avoid null reference
+                viewModel.FirstName = string.Empty;
+                viewModel.LastName = string.Empty;
+                viewModel.Email = string.Empty;
+                viewModel.Phone = string.Empty;
+                viewModel.Password = string.Empty;
+                viewModel.ConfirmPassword = string.Empty;
+                viewModel.Specialization = string.Empty;
+                viewModel.SelectedBranchIds = new List<int>();
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                Console.WriteLine($"Error in RegisterInstructor: {ex}");
+                // Return a view with empty model for graceful degradation
+                return View(new InstructorRegistrationViewModel
+                {
+                    AvailableBranches = new List<BranchViewModel>()
+                });
+            }
         }
 
         [HttpPost]
@@ -155,13 +191,14 @@ namespace AthleteTracker.Controllers
                 if (await _context.Users.AnyAsync(u => u.Email == model.Email))
                 {
                     ModelState.AddModelError("Email", "Email already registered");
+                    model.AvailableBranches = await GetBranchesAsync();
                     return View(model);
                 }
 
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
-                    // Create user
+                    // create user
                     var user = new User
                     {
                         Email = model.Email,
@@ -176,7 +213,7 @@ namespace AthleteTracker.Controllers
                     _context.Users.Add(user);
                     await _context.SaveChangesAsync();
 
-                    // Create instructor
+                    // create instructor
                     var instructor = new Instructor
                     {
                         UserId = user.UserId,
@@ -187,6 +224,18 @@ namespace AthleteTracker.Controllers
                     _context.Instructors.Add(instructor);
                     await _context.SaveChangesAsync();
 
+                    // create instructor-branch relationships
+                    foreach (var branchId in model.SelectedBranchIds)
+                    {
+                        var instructorBranch = new InstructorBranch
+                        {
+                            InstructorId = instructor.InstructorId,
+                            BranchId = branchId
+                        };
+                        _context.InstructorBranches.Add(instructorBranch);
+                    }
+
+                    await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
                     return RedirectToAction("Login", "Account");
                 }
@@ -197,6 +246,7 @@ namespace AthleteTracker.Controllers
                 }
             }
 
+            model.AvailableBranches = await GetBranchesAsync();
             return View(model);
         }
 
@@ -261,6 +311,22 @@ namespace AthleteTracker.Controllers
             }
 
             return View(model);
+        }
+
+        private async Task<List<BranchViewModel>> GetBranchesAsync()
+        {
+            return await _context.Branches
+                .Include(b => b.Center)
+                .OrderBy(b => b.Center.CenterName)
+                .ThenBy(b => b.BranchName)
+                .Select(b => new BranchViewModel
+                {
+                    BranchId = b.BranchId,
+                    BranchName = b.BranchName,
+                    CenterId = b.CenterId,
+                    CenterName = b.Center.CenterName
+                })
+                .ToListAsync();
         }
     }
 }

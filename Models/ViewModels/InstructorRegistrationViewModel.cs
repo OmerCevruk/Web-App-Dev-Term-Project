@@ -17,7 +17,6 @@ namespace AthleteTracker.Models
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Phone number is required")]
-        [Phone(ErrorMessage = "Invalid phone number")]
         [Display(Name = "Phone Number")]
         public string Phone { get; set; } = string.Empty;
 
@@ -31,6 +30,10 @@ namespace AthleteTracker.Models
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Branch is required")]
+        [Display(Name = "Branch")]
+        public int BranchId { get; set; }
+
         [Required(ErrorMessage = "Specialization is required")]
         public string Specialization { get; set; } = string.Empty;
 
@@ -38,5 +41,14 @@ namespace AthleteTracker.Models
         [DataType(DataType.Date)]
         [Display(Name = "Hire Date")]
         public DateOnly HireDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+
+
+        [Required(ErrorMessage = "At least one branch must be selected")]
+        [Display(Name = "Branches")]
+        public List<int> SelectedBranchIds { get; set; } = new();
+
+        public List<BranchViewModel> AvailableBranches { get; set; } = new();
     }
+
 }
+

@@ -22,6 +22,7 @@ namespace AthleteTracker.Data
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<PaymentPlan> PaymentPlans { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<InstructorBranch> InstructorBranches { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -44,17 +45,34 @@ namespace AthleteTracker.Data
                 .WithMany(p => p.Students)
                 .HasForeignKey(s => s.ParentId);
 
-            modelBuilder.Entity<Instructor>()
-                .HasOne(i => i.User)
-                .WithOne()
-                .HasForeignKey<Instructor>(i => i.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Admin>()
                 .HasOne(a => a.User)
                 .WithOne()
                 .HasForeignKey<Admin>(a => a.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InstructorBranch>()
+                        .HasOne(ib => ib.Instructor)
+                        .WithMany(i => i.InstructorBranches)
+                        .HasForeignKey(ib => ib.InstructorId)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InstructorBranch>()
+                        .HasOne(ib => ib.Branch)
+                        .WithMany(b => b.InstructorBranches)
+                        .HasForeignKey(ib => ib.BranchId)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InstructorBranch>()
+                        .HasIndex(ib => new { ib.InstructorId, ib.BranchId })
+                        .IsUnique();
+
+            modelBuilder.Entity<Instructor>()
+                        .HasOne(i => i.User)
+                        .WithOne()
+                        .HasForeignKey<Instructor>(i => i.UserId)
+                        .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Branch>()
                 .HasOne(b => b.Center)

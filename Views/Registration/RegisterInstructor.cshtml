@@ -1,4 +1,3 @@
-@* Views/Registration/RegisterInstructor.cshtml *@
 @model AthleteTracker.Models.InstructorRegistrationViewModel
 
 @{
@@ -41,14 +40,40 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" />
+                            <input asp-for="Password" class="form-control" type="password" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
                         <div class="col-md-6">
                             <label asp-for="ConfirmPassword" class="form-label"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" />
+                            <input asp-for="ConfirmPassword" class="form-control" type="password" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label asp-for="SelectedBranchIds" class="form-label">Branches</label>
+                        <select asp-for="SelectedBranchIds" class="form-select" multiple size="8">
+                            @if (Model.AvailableBranches != null)
+                            {
+                                @foreach (var centerGroup in Model.AvailableBranches
+                                    .GroupBy(b => new { b.CenterId, b.CenterName })
+                                    .OrderBy(g => g.Key.CenterName))
+                                {
+                                    <optgroup label="@centerGroup.Key.CenterName">
+                                        @foreach (var branch in centerGroup.OrderBy(b => b.BranchName))
+                                        {
+                                            <option value="@branch.BranchId">
+                                                @branch.BranchName
+                                            </option>
+                                        }
+                                    </optgroup>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="SelectedBranchIds" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            Hold Ctrl 
+                        </small>
                     </div>
 
                     <div class="mb-3">
@@ -73,13 +98,10 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Registe a Coach</button>
+                        <button type="submit" class="btn btn-primary">Register Coach</button>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
-
-                <div class="mt-3 text-center">
-                    <p>Already have an account? <a asp-controller="Account" asp-action="Login">Login here</a></p>
-                </div>
             </div>
         </div>
     </div>

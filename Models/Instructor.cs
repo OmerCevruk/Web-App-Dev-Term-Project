@@ -20,5 +20,7 @@ namespace AthleteTracker.Models
 
         [ForeignKey("UserId")]
         public virtual User User { get; set; } = null!;
+
+        public virtual ICollection<InstructorBranch> InstructorBranches { get; set; } = new List<InstructorBranch>();
     }
 }
