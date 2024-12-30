@@ -35,8 +35,8 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="SportsCenter" asp-action="Index">Sports Centers</a>
                         </li>
-                        @if (User.IsInRole("Instructor") || User.IsInRole("Admin") || User.IsInRole("Parent"))
-                        {
+                      @if (User.IsInRole("Instructor") || User.IsInRole("Admin") || User.IsInRole("Parent"))
+                      {
                         <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Development" asp-action="Index">
                                     <i class="bi bi-graph-up"></i> Development Records
@@ -76,6 +76,14 @@
                             <li>
                             <a class="dropdown-item" asp-controller="Payment" asp-action="Index">View Payments</a>
                             </li>
+                            @if (User.IsInRole("Parent")||User.IsInRole("Admin"))
+                            {
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Payment" asp-action="Index">
+                                        <i class="bi bi-credit-card"></i> Make Payment
+                                    </a>
+                                </li>
+                            }
                             @if (User.IsInRole("Admin"))
                             {
                             <li>

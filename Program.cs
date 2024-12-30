@@ -35,6 +35,8 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddHttpContextAccessor();
 // student selection services
 builder.Services.AddScoped<IStudentService, StudentService>();
+// Payment service
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 // Add authorization
 builder.Services.AddAuthorization(options =>
 {

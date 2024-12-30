@@ -12,13 +12,16 @@ namespace AthleteTracker.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IStudentService _studentService;
+        private readonly IPaymentService _paymentService;
 
         public PaymentController(
             ApplicationDbContext context,
-            IStudentService studentService)
+            IStudentService studentService,
+            IPaymentService paymentService)
         {
             _context = context;
             _studentService = studentService;
+            _paymentService = paymentService;
         }
 
         // GET: Payment/Index
@@ -31,10 +34,29 @@ namespace AthleteTracker.Controllers
                 .Include(p => p.Plan)
                 .ThenInclude(p => p.Enrollment)
                 .ThenInclude(e => e.Student)
+                .Include(p => p.Plan)
+                .ThenInclude(p => p.Enrollment)
+                .ThenInclude(e => e.Session)
                 .Where(p => p.Plan.Enrollment.Student.Parent.UserId == int.Parse(userId))
+                .OrderByDescending(p => p.DueDate)
+                .Select(p => new PaymentViewModel
+                {
+                    PaymentId = p.PaymentId,
+                    Amount = p.Amount,
+                    DueDate = p.DueDate,
+                    Status = p.Status,
+                    PaymentMethod = p.PaymentMethod,
+                    PaymentDate = p.PaymentDate,
+                    SessionName = p.Plan.Enrollment.Session.SessionName
+                })
                 .ToListAsync();
 
-            return View(payments);
+            var viewModel = new PaymentListViewModel
+            {
+                Payments = payments
+            };
+
+            return View(viewModel);
         }
 
         // GET: Payment/ManagePaymentPlan
@@ -67,101 +89,54 @@ namespace AthleteTracker.Controllers
 
         // POST: Payment/CreatePaymentPlan
         [HttpPost]
-        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreatePaymentPlan(PaymentPlanViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var student = await _studentService.GetStudentById(model.StudentId);
-                if (student != null)
+                try
                 {
-                    model.StudentName = $"{student.FirstName} {student.LastName}";
-                }
-                return View("ManagePaymentPlan", model);
-            }
+                    var enrollment = await _context.Enrollments
+                        .FirstOrDefaultAsync(e => e.StudentId == model.StudentId && e.IsActive);
 
-            // Get active enrollment for student
-            var enrollment = await _context.Enrollments
-                .FirstOrDefaultAsync(e => e.StudentId == model.StudentId && e.IsActive);
-
-            if (enrollment == null)
-            {
-                ModelState.AddModelError("", "No active enrollment found for this student.");
-                return View("ManagePaymentPlan", model);
-            }
-
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try
-            {
-                // Create payment plan
-                var plan = new PaymentPlan
-                {
-                    EnrollmentId = enrollment.EnrollmentId,
-                    TotalAmount = model.TotalAmount,
-                    NumberOfInstallments = model.NumberOfInstallments,
-                    PaymentDay = model.PaymentDay
-                };
-
-                _context.PaymentPlans.Add(plan);
-                await _context.SaveChangesAsync();
-
-                // Create individual payments
-                var monthlyAmount = Math.Round(model.TotalAmount / model.NumberOfInstallments, 2);
-                var remainingAmount = model.TotalAmount;
-
-                for (int i = 0; i < model.NumberOfInstallments; i++)
-                {
-                    decimal installmentAmount;
-                    if (i == model.NumberOfInstallments - 1)
+                    if (enrollment == null)
                     {
-                        // Last payment accounts for any rounding differences
-                        installmentAmount = remainingAmount;
-                    }
-                    else
-                    {
-                        installmentAmount = monthlyAmount;
-                        remainingAmount -= monthlyAmount;
+                        ModelState.AddModelError("", "No active enrollment found for this student.");
+                        return View("ManagePaymentPlan", model);
                     }
 
-                    var payment = new Payment
-                    {
-                        PlanId = plan.PlanId,
-                        Amount = installmentAmount,
-                        DueDate = DateTime.UtcNow.AddMonths(i).Date.AddDays(model.PaymentDay - 1),
-                        Status = PaymentStatus.Pending
-                    };
+                    await _paymentService.GeneratePaymentPlan(
+                        enrollment.EnrollmentId,
+                        model.TotalAmount,
+                        model.NumberOfInstallments,
+                        model.PaymentDay);
 
-                    _context.Payments.Add(payment);
+                    TempData["Success"] = "Payment plan created successfully.";
+                    return RedirectToAction(nameof(Index));
                 }
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                TempData["Success"] = "Payment plan created successfully.";
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error creating payment plan. Please try again. {}");
+                }
             }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync();
-                ModelState.AddModelError("", "An error occurred while creating the payment plan. Please try again.");
-                return View("ManagePaymentPlan", model);
-            }
+
+            return View("ManagePaymentPlan", model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MakePayment(int paymentId, string paymentMethod)
+        public async Task<IActionResult> ProcessPayment(int paymentId, string paymentMethod)
         {
-            var payment = await _context.Payments.FindAsync(paymentId);
-            if (payment == null)
-                return NotFound();
+            if (await _paymentService.ProcessPayment(paymentId, paymentMethod))
+            {
+                TempData["Success"] = "Payment processed successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "Error processing payment. Please try again.";
+            }
 
-            payment.PaymentDate = DateTime.UtcNow;
-            payment.Status = PaymentStatus.Paid;
-            payment.PaymentMethod = paymentMethod;
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -181,6 +156,125 @@ namespace AthleteTracker.Controllers
                 .ToListAsync();
 
             return View(payments);
+        }
+
+        // make payment actions
+        [Authorize]
+        public async Task<IActionResult> StudentPayments(int studentId)
+        {
+            //  if parent has Student
+            var userId = User.FindFirst("UserId")?.Value;
+            if (userId == null) return Challenge();
+
+            var student = await _context.Students
+                .Include(s => s.Parent)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId
+                    && s.Parent.UserId == int.Parse(userId));
+
+            if (student == null)
+                return NotFound();
+
+            var payments = await _context.Payments
+                .Include(p => p.Plan)
+                    .ThenInclude(p => p.Enrollment)
+                        .ThenInclude(e => e.Session)
+                .Where(p => p.Plan.Enrollment.StudentId == studentId)
+                .OrderBy(p => p.DueDate)
+                .Select(p => new PaymentViewModel
+                {
+                    PaymentId = p.PaymentId,
+                    Amount = p.Amount,
+                    DueDate = p.DueDate,
+                    Status = p.Status,
+                    PaymentMethod = p.PaymentMethod,
+                    PaymentDate = p.PaymentDate,
+                    SessionName = p.Plan.Enrollment.Session.SessionName
+                })
+                .ToListAsync();
+
+            var viewModel = new PaymentListViewModel
+            {
+                StudentId = studentId,
+                StudentName = $"{student.FirstName} {student.LastName}",
+                Payments = payments
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> MakePayment(int paymentId, string paymentMethod)
+        {
+            // Verify parent has access to this payment
+            var userId = User.FindFirst("UserId")?.Value;
+            if (userId == null) return Challenge();
+
+            var payment = await _context.Payments
+                .Include(p => p.Plan)
+                .ThenInclude(p => p.Enrollment)
+                .ThenInclude(e => e.Student)
+                .FirstOrDefaultAsync(p => p.PaymentId == paymentId
+                    && p.Plan.Enrollment.Student.Parent.UserId == int.Parse(userId));
+
+            if (payment == null)
+                return NotFound();
+
+            if (await _paymentService.ProcessPayment(paymentId, paymentMethod))
+            {
+                TempData["Success"] = "Payment processed successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "Error processing payment. Please try again.";
+            }
+
+            return RedirectToAction(nameof(StudentPayments),
+                new { studentId = payment.Plan.Enrollment.StudentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Parent")]
+        public async Task<IActionResult> PayRemaining(string paymentMethod)
+        {
+            var userId = User.FindFirst("UserId")?.Value;
+            if (userId == null) return Challenge();
+
+            var pendingPayments = await _context.Payments
+                .Include(p => p.Plan)
+                .ThenInclude(p => p.Enrollment)
+                .ThenInclude(e => e.Student)
+                .Where(p => p.Plan.Enrollment.Student.Parent.UserId == int.Parse(userId) &&
+                      (p.Status == PaymentStatus.Pending || p.Status == PaymentStatus.Overdue))
+                .ToListAsync();
+
+            if (!pendingPayments.Any())
+            {
+                TempData["Info"] = "No pending payments found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var successCount = 0;
+            foreach (var payment in pendingPayments)
+            {
+                if (await _paymentService.ProcessPayment(payment.PaymentId, paymentMethod))
+                {
+                    successCount++;
+                }
+            }
+
+            if (successCount > 0)
+            {
+                TempData["Success"] = $"Successfully processed {successCount} payment(s).";
+            }
+            else
+            {
+                TempData["Error"] = "Failed to process payments. Please try again.";
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
