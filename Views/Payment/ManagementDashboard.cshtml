@@ -35,7 +35,6 @@
                                 <th>Status</th>
                                 <th>Payment Date</th>
                                 <th>Method</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -56,15 +55,6 @@
                                     <td><span class="badge bg-@statusClass">@installment.Status</span></td>
                                     <td>@(installment.PaymentDate?.ToString("d") ?? "-")</td>
                                     <td>@(installment.PaymentMethod ?? "-")</td>
-                                    <td>
-                                        @if (installment.Status == PaymentStatus.Pending || installment.Status == PaymentStatus.Overdue)
-                                        {
-                                            <button class="btn btn-sm btn-success" 
-                                                    onclick="recordPayment(@installment.PaymentId)">
-                                                Record Payment
-                                            </button>
-                                        }
-                                    </td>
                                 </tr>
                             }
                         </tbody>
