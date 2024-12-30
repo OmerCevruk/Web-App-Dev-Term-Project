@@ -35,14 +35,22 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="SportsCenter" asp-action="Index">Sports Centers</a>
                         </li>
+                        @if (User.IsInRole("Instructor") || User.IsInRole("Admin") || User.IsInRole("Parent"))
+                        {
                         <li class="nav-item">
-                            @if (User.IsInRole("Instructor") || User.IsInRole("Admin") || User.IsInRole("Parent"))
-                            {
                                 <a class="nav-link text-dark" asp-controller="Development" asp-action="Index">
                                     <i class="bi bi-graph-up"></i> Development Records
                                 </a>
-                            }
                         </li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Report" asp-action="Index">
+                                    <i class="bi bi-file-earmark-bar-graph"></i> Reports
+                                </a>
+                            </li>
+                        }
                         <!-- Department Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

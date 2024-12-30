@@ -1,0 +1,118 @@
+@using AthleteTracker.Models
+@model ReportViewModel
+@* Views/Report/Index.cshtml *@
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Management Reports</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="StartDate" class="form-label"></label>
+                    <input asp-for="StartDate" class="form-control" type="date" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="EndDate" class="form-label"></label>
+                    <input asp-for="EndDate" class="form-control" type="date" />
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Update Report</button>
+                    <a asp-action="Export" 
+                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")"
+                       asp-route-endDate="@Model.EndDate.ToString("yyyy-MM-dd")"
+                       class="btn btn-secondary">
+                        Export Report
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Students</h5>
+                    <p class="card-text h2">@Model.TotalStudents</p>
+                    <small>Active: @Model.ActiveStudents</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">New Enrollments</h5>
+                    <p class="card-text h2">@Model.NewEnrollments</p>
+                    <small>In selected date range</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Withdrawals</h5>
+                    <p class="card-text h2">@Model.Withdrawals</p>
+                    <small>In selected date range</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Total Income</h5>
+                    <p class="card-text h2">@Model.TotalIncome.ToString("C")</p>
+                    <small>In selected date range</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Session Statistics</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Session</th>
+                            <th>Branch</th>
+                            <th>Instructor</th>
+                            <th>Enrollments</th>
+                            <th>Capacity</th>
+                            <th>Occupancy Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stat in Model.SessionStats.OrderBy(s => s.BranchName))
+                        {
+                            <tr>
+                                <td>@stat.SessionName</td>
+                                <td>@stat.BranchName</td>
+                                <td>@stat.InstructorName</td>
+                                <td>@stat.CurrentEnrollments</td>
+                                <td>@stat.MaxCapacity</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar @(stat.OccupancyRate >= 90 ? "bg-danger" : 
+                                                                  stat.OccupancyRate >= 75 ? "bg-warning" : 
+                                                                  "bg-success")"
+                                             role="progressbar"
+                                             style="width: @stat.OccupancyRate%">
+                                            @stat.OccupancyRate.ToString("F1")%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
