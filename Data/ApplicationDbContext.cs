@@ -40,15 +40,18 @@ namespace AthleteTracker.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            modelBuilder.Entity<Student>()
-                .HasOne(s => s.Parent)
-                .WithMany(p => p.Students)
-                .HasForeignKey(s => s.ParentId);
+            modelBuilder.Entity<Student>(entity =>
+                {
+                    entity.HasKey(e => e.StudentId);
 
-            modelBuilder.Entity<Student>()
-                .HasMany(s => s.Enrollments)
-                .WithOne(e => e.Student)
-                .HasForeignKey(e => e.StudentId);
+                    entity.HasOne(d => d.Parent)
+                        .WithMany(p => p.Students)
+                        .HasForeignKey(d => d.ParentId);
+
+                    entity.HasMany(d => d.Enrollments)
+                        .WithOne(p => p.Student)
+                        .HasForeignKey(d => d.StudentId);
+                });
 
 
             modelBuilder.Entity<Admin>()
@@ -94,16 +97,28 @@ namespace AthleteTracker.Data
                 .WithMany()
                 .HasForeignKey(s => s.InstructorId);
 
-            modelBuilder.Entity<Enrollment>()
-                .HasOne(e => e.Student)
-                .WithMany()
-                .HasForeignKey(e => e.StudentId);
+            modelBuilder.Entity<Enrollment>(entity =>
+            {
+                entity.HasKey(e => e.EnrollmentId);
 
-            modelBuilder.Entity<Enrollment>()
-                    .HasOne(e => e.Session)
-                    .WithMany(s => s.Enrollments)
-                    .HasForeignKey(e => e.SessionId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(d => d.Student)
+                    .WithMany(p => p.Enrollments)
+                    .HasForeignKey(d => d.StudentId);
+
+                entity.HasOne(d => d.Session)
+                    .WithMany(p => p.Enrollments)
+                    .HasForeignKey(d => d.SessionId);
+            });
+            // modelBuilder.Entity<Enrollment>()
+            //     .HasOne(e => e.Student)
+            //     .WithMany()
+            //     .HasForeignKey(e => e.StudentId);
+            //
+            // modelBuilder.Entity<Enrollment>()
+            //         .HasOne(e => e.Session)
+            //         .WithMany(s => s.Enrollments)
+            //         .HasForeignKey(e => e.SessionId)
+            //         .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PaymentPlan>()
                 .HasOne(p => p.Enrollment)

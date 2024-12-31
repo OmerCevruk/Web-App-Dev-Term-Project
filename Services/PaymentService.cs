@@ -85,7 +85,7 @@ namespace AthleteTracker.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "Error generating payment plan for enrollment {EnrollmentId}", enrollmentId);
+                Console.WriteLine(ex);
                 throw;
             }
         }

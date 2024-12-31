@@ -6,7 +6,7 @@ using AthleteTracker.Models;
 
 namespace AthleteTracker.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class BranchController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -45,7 +45,6 @@ namespace AthleteTracker.Controllers
             }
             catch (Exception ex)
             {
-                // Add this temporarily for debugging
                 return Content($"Error: {ex.Message}");
             }
         }

@@ -118,6 +118,7 @@ namespace AthleteTracker.Controllers
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", "Error creating payment plan. Please try again. {}");
+                    Console.WriteLine(ex);
                 }
             }
 
