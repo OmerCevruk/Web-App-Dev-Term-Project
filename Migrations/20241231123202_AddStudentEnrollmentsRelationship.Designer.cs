@@ -3,6 +3,7 @@ using System;
 using AthleteTracker.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace athlete_tracking.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241231123202_AddStudentEnrollmentsRelationship")]
+    partial class AddStudentEnrollmentsRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace athlete_tracking.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Admins", (string)null);
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.Branch", b =>
@@ -92,7 +95,7 @@ namespace athlete_tracking.Migrations
 
                     b.HasIndex("CenterId");
 
-                    b.ToTable("Branches", (string)null);
+                    b.ToTable("Branches");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.DevelopmentRecord", b =>
@@ -128,7 +131,7 @@ namespace athlete_tracking.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("DevelopmentRecords", (string)null);
+                    b.ToTable("DevelopmentRecords");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.Enrollment", b =>
@@ -171,7 +174,7 @@ namespace athlete_tracking.Migrations
 
                     b.HasIndex("StudentId1");
 
-                    b.ToTable("Enrollments", (string)null);
+                    b.ToTable("Enrollments");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.Instructor", b =>
@@ -204,7 +207,7 @@ namespace athlete_tracking.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Instructors", (string)null);
+                    b.ToTable("Instructors");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.InstructorBranch", b =>
@@ -234,7 +237,7 @@ namespace athlete_tracking.Migrations
                     b.HasIndex("InstructorId", "BranchId")
                         .IsUnique();
 
-                    b.ToTable("InstructorBranches", (string)null);
+                    b.ToTable("InstructorBranches");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.Parent", b =>
@@ -269,7 +272,7 @@ namespace athlete_tracking.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Parents", (string)null);
+                    b.ToTable("Parents");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.Payment", b =>
@@ -309,7 +312,7 @@ namespace athlete_tracking.Migrations
 
                     b.HasIndex("PlanId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.PaymentPlan", b =>
@@ -343,7 +346,7 @@ namespace athlete_tracking.Migrations
                     b.HasIndex("EnrollmentId")
                         .IsUnique();
 
-                    b.ToTable("PaymentPlans", (string)null);
+                    b.ToTable("PaymentPlans");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.Session", b =>
@@ -392,7 +395,7 @@ namespace athlete_tracking.Migrations
 
                     b.HasIndex("InstructorId");
 
-                    b.ToTable("Sessions", (string)null);
+                    b.ToTable("Sessions");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.SportsCenter", b =>
@@ -430,7 +433,7 @@ namespace athlete_tracking.Migrations
 
                     b.HasKey("CenterId");
 
-                    b.ToTable("SportsCenters", (string)null);
+                    b.ToTable("SportsCenters");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.Student", b =>
@@ -476,7 +479,7 @@ namespace athlete_tracking.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.User", b =>
@@ -524,7 +527,7 @@ namespace athlete_tracking.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("AthleteTracker.Models.Admin", b =>

@@ -31,5 +31,7 @@ namespace AthleteTracker.Models
 
         [ForeignKey("ParentId")]
         public virtual Parent Parent { get; set; } = null!;
+
+        public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }

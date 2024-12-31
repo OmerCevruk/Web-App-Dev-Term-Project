@@ -45,6 +45,11 @@ namespace AthleteTracker.Data
                 .WithMany(p => p.Students)
                 .HasForeignKey(s => s.ParentId);
 
+            modelBuilder.Entity<Student>()
+                .HasMany(s => s.Enrollments)
+                .WithOne(e => e.Student)
+                .HasForeignKey(e => e.StudentId);
+
 
             modelBuilder.Entity<Admin>()
                 .HasOne(a => a.User)
@@ -95,9 +100,10 @@ namespace AthleteTracker.Data
                 .HasForeignKey(e => e.StudentId);
 
             modelBuilder.Entity<Enrollment>()
-                .HasOne(e => e.Session)
-                .WithMany(s => s.Enrollments)
-                .HasForeignKey(e => e.SessionId);
+                    .HasOne(e => e.Session)
+                    .WithMany(s => s.Enrollments)
+                    .HasForeignKey(e => e.SessionId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PaymentPlan>()
                 .HasOne(p => p.Enrollment)
