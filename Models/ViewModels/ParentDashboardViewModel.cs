@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace AthleteTracker.Models
 {
     public class ParentDashboardViewModel
