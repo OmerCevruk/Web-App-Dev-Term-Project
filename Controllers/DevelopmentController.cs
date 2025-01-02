@@ -23,7 +23,7 @@ namespace AthleteTracker.Controllers
             _studentService = studentService;
         }
 
-        [Authorize(Roles = "Instructor,Admin")]
+        [Authorize(Roles = "Instructor,Admin,Parent")]
         public async Task<IActionResult> Index(int? studentId)
         {
             if (!studentId.HasValue)
