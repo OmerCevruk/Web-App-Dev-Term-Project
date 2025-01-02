@@ -112,3 +112,10 @@
 /home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 /home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
 /home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
+/home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/Microsoft.AspNetCore.Authorization.dll
+/home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.Internal.dll
+/home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+/home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/Microsoft.AspNetCore.Metadata.dll
+/home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/Microsoft.Extensions.Identity.Core.dll
+/home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/Microsoft.Extensions.Identity.Stores.dll
+/home/omer/Documents/webApp-proje/athlete-tracking/bin/Debug/net8.0/Microsoft.Extensions.Options.dll

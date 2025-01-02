@@ -2,6 +2,7 @@
 @model ParentDashboardViewModel
 @{
     ViewData["Title"] = "Parent Dashboard";
+    string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 }
 
 <div class="container mt-4">
@@ -27,14 +28,17 @@
                                     <ul class="list-group">
                                         @foreach (var enrollment in student.Enrollments)
                                         {
-                                            <li class="list-group-item">
-                                                @enrollment.Session.SessionName
-                                                <small class="text-muted d-block">
-                                                    @enrollment.Session.DayOfWeek:
-                                                    @enrollment.Session.StartTime.ToString("HH:mm") - 
-                                                    @enrollment.Session.EndTime.ToString("HH:mm")
-                                                </small>
-                                            </li>
+                                            var session = enrollment.AvailableSessions.FirstOrDefault();
+                                            if (session != null)
+                                            {
+                                                <li class="list-group-item">
+                                                    @session.SessionName
+                                                    <small class="text-muted d-block">
+                                                        @days[int.Parse(session.Schedule.Split(':')[0]) - 1]:
+                                                        @session.Schedule.Split(':')[1]
+                                                    </small>
+                                                </li>
+                                            }
                                         }
                                     </ul>
                                 }

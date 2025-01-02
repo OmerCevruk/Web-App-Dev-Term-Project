@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using athlete_tracking.Models;
+using Microsoft.AspNetCore.Authorization;
+using AthleteTracker.Models;
 
 namespace athlete_tracking.Controllers;
 
@@ -15,6 +16,10 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        if (User.Identity?.IsAuthenticated == true && User.IsInRole("Parent"))
+        {
+            return RedirectToAction("Index", "ParentDashboard");
+        }
         return View();
     }
 

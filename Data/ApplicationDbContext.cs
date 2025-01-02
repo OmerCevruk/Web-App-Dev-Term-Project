@@ -9,6 +9,7 @@ namespace AthleteTracker.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
         public DbSet<User> Users { get; set; }
@@ -149,7 +150,23 @@ namespace AthleteTracker.Data
 
                 foreach (var property in properties)
                 {
-                    property.SetColumnType("timestamp with time zone");
+                    // Use timestamp without time zone for better compatibility
+                    property.SetColumnType("timestamp without time zone");
+                }
+            }
+
+            // Add value converters for DateTime properties
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                    {
+                        property.SetValueConverter(
+                            new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
+                                v => v.ToUniversalTime(),
+                                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
+                    }
                 }
             }
         }

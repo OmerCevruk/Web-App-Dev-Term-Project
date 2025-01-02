@@ -68,10 +68,6 @@ namespace AthleteTracker.Controllers
                         return Redirect(returnUrl);
                     }
 
-                    if (user.Role == UserRole.Parent)
-                    {
-                        return RedirectToAction("Index", "ParentDashboard");
-                    }
                     return RedirectToAction("Index", "Home");
                 }
 
