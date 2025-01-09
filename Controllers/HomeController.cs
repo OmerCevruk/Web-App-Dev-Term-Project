@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using AthleteTracker.Models;
+using athlete_tracking.Models;
 
 namespace athlete_tracking.Controllers;
 
